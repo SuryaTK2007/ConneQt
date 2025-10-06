@@ -1,11 +1,9 @@
-import React from 'react'
+ import LandingPage from './pages/LandingPage';
 
-export default function App() {
-  return (
-    <div>
-       <h1 class="text-3xl font-bold underline">
-    Hello world!
-  </h1>
-    </div>
-  )
-}
+   function App() {
+     return (
+       <LandingPage />
+     );
+   }
+
+   export default App;

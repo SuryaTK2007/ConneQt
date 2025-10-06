@@ -37,26 +37,26 @@ const LandingPage = () => {
   };
 
   const FeatureCard = ({ icon, title, children }) => (
-    <div className="border border-gray-200 bg-white dark:border-cyan-500/20 dark:bg-gray-900/50 backdrop-blur-lg rounded-2xl p-8 text-center transform hover:-translate-y-2 transition-transform duration-300 shadow-lg hover:shadow-cyan-500/50">
-      <div className="text-cyan-400 text-5xl mb-6 inline-block">{icon}</div>
-      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 tracking-wide">
+    <div className="group border border-gray-200/50 bg-white/80 dark:border-gray-700/50 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl p-8 text-center transform hover:-translate-y-3 transition-all duration-500 ease-out shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 hover:border-cyan-400/30">
+      <div className="text-cyan-500 text-5xl mb-6 inline-block transform group-hover:scale-110 transition-transform duration-300 ease-out">{icon}</div>
+      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 tracking-wide group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors duration-300">
         {title}
       </h3>
-      <p className="text-gray-600 dark:text-gray-400">{children}</p>
+      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{children}</p>
     </div>
   );
 
   const EventCard = ({ date, title, category }) => (
-    <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-xl p-6 flex items-center space-x-6 border border-gray-200 dark:border-cyan-500/20 hover:border-cyan-500/60 transition-all duration-300">
-      <div className="text-center border-r border-gray-700 pr-6">
-        <p className="text-3xl font-bold text-cyan-400">{date.day}</p>
-        <p className="text-sm text-gray-400">{date.month}</p>
+    <div className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl p-6 flex items-center space-x-6 border border-gray-200/50 dark:border-gray-700/50 hover:border-cyan-400/50 transition-all duration-500 ease-out shadow-lg hover:shadow-xl hover:shadow-cyan-500/10 transform hover:-translate-y-1 cursor-pointer">
+      <div className="text-center border-r border-gray-300 dark:border-gray-600 pr-6 group-hover:border-cyan-400/50 transition-colors duration-300">
+        <p className="text-3xl font-bold text-cyan-500 group-hover:text-cyan-400 transition-colors duration-300">{date.day}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors duration-300">{date.month}</p>
       </div>
-      <div>
-        <p className="text-xs text-cyan-400 font-semibold tracking-widest uppercase">
+      <div className="flex-1">
+        <p className="text-xs text-cyan-500 font-semibold tracking-widest uppercase mb-2 group-hover:text-cyan-400 transition-colors duration-300">
           {category}
         </p>
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-300 transition-colors duration-300">
           {title}
         </h3>
       </div>
@@ -66,31 +66,31 @@ const LandingPage = () => {
   return (
     <div className="bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-300 font-sans">
       {/* Navbar */}
-      <header className="sticky top-0 z-50 w-full backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 border-b border-gray-200/80 dark:border-gray-800/80">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 border-b border-gray-200/50 dark:border-gray-800/50 transition-all duration-300">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-20">
             <a
               href="#"
-              className="text-2xl font-bold text-gray-900 dark:text-white"
+              className="text-2xl font-bold text-gray-900 dark:text-white hover:scale-105 transition-transform duration-300 ease-out"
             >
               Conne<span className="text-cyan-500">Q</span>t
             </a>
             <nav className="hidden md:flex items-center space-x-8">
               <a
                 href="#features"
-                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-colors"
+                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-cyan-500 after:transition-all after:duration-300 hover:after:w-full"
               >
                 Features
               </a>
               <a
                 href="#mentorship"
-                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-colors"
+                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-cyan-500 after:transition-all after:duration-300 hover:after:w-full"
               >
                 Mentorship
               </a>
               <a
                 href="#events"
-                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-colors"
+                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out font-medium relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-cyan-500 after:transition-all after:duration-300 hover:after:w-full"
               >
                 Events
               </a>
@@ -98,13 +98,13 @@ const LandingPage = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleThemeToggle}
-                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-colors"
+                className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110"
               >
                 {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
               </button>
               <a
                 href="#"
-                className="hidden sm:inline-block px-6 py-2 text-sm font-semibold text-white bg-cyan-600 rounded-full hover:bg-cyan-700 transition-colors"
+                className="hidden sm:inline-block px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full hover:from-cyan-700 hover:to-cyan-800 transition-all duration-300 ease-out transform hover:scale-105 shadow-lg hover:shadow-cyan-500/30"
               >
                 Join Now
               </a>
@@ -126,10 +126,10 @@ const LandingPage = () => {
               Connect with alumni, find mentors, discover events, and build lasting professional relationships within your campus community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-3 font-bold text-white bg-cyan-600 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-700 transition-all transform hover:scale-105">
-                Get Started <FiArrowRight className="inline ml-2" />
+              <button className="group px-8 py-4 font-bold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full shadow-xl shadow-cyan-500/30 hover:from-cyan-700 hover:to-cyan-800 hover:shadow-2xl hover:shadow-cyan-500/40 transition-all duration-500 ease-out transform hover:scale-105">
+                Get Started <FiArrowRight className="inline ml-2 group-hover:translate-x-1 transition-transform duration-300" />
               </button>
-              <button className="px-8 py-3 font-bold text-gray-800 dark:text-white bg-gray-200 dark:bg-gray-800 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
+              <button className="px-8 py-4 font-bold text-gray-800 dark:text-white bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 ease-out transform hover:scale-105 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 shadow-lg hover:shadow-xl">
                 Learn More
               </button>
             </div>
@@ -170,8 +170,8 @@ const LandingPage = () => {
                 <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
                   Get matched with the perfect mentor based on your career goals, interests, and skills. Our intelligent system connects you with alumni and faculty who can provide valuable guidance and industry insights.
                 </p>
-                <button className="px-8 py-3 font-bold text-white bg-cyan-600 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-700 transition-all transform hover:scale-105">
-                  Find a Mentor
+                <button className="group px-8 py-4 font-bold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full shadow-xl shadow-cyan-500/30 hover:from-cyan-700 hover:to-cyan-800 hover:shadow-2xl hover:shadow-cyan-500/40 transition-all duration-500 ease-out transform hover:scale-105">
+                  Find a Mentor <FiArrowRight className="inline ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                 </button>
               </div>
               <div className="relative h-96">
@@ -180,14 +180,14 @@ const LandingPage = () => {
                   <FiUsers className="text-9xl text-cyan-400 opacity-20" />
                 </div>
                 <div className="relative flex flex-col space-y-4">
-                  <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-lg shadow-lg flex items-center space-x-3">
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-5 rounded-2xl shadow-xl flex items-center space-x-4 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 ease-out transform hover:-translate-y-1 border border-gray-200/50 dark:border-gray-700/50">
                     <img
                       src="https://i.pravatar.cc/40?u=a"
                       alt="Mentor 1"
-                      className="w-10 h-10 rounded-full"
+                      className="w-12 h-12 rounded-full ring-2 ring-cyan-500/20 hover:ring-cyan-500/40 transition-all duration-300"
                     />
                     <div>
-                      <p className="font-bold text-gray-900 dark:text-white">
+                      <p className="font-bold text-gray-900 dark:text-white text-base">
                         Sarah Chen
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -195,14 +195,14 @@ const LandingPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-lg shadow-lg flex items-center space-x-3 ml-12">
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-5 rounded-2xl shadow-xl flex items-center space-x-4 ml-12 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 ease-out transform hover:-translate-y-1 border border-gray-200/50 dark:border-gray-700/50">
                     <img
                       src="https://i.pravatar.cc/40?u=b"
                       alt="Mentor 2"
-                      className="w-10 h-10 rounded-full"
+                      className="w-12 h-12 rounded-full ring-2 ring-cyan-500/20 hover:ring-cyan-500/40 transition-all duration-300"
                     />
                     <div>
-                      <p className="font-bold text-gray-900 dark:text-white">
+                      <p className="font-bold text-gray-900 dark:text-white text-base">
                         David Lee
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -210,14 +210,14 @@ const LandingPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-lg shadow-lg flex items-center space-x-3">
+                  <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-5 rounded-2xl shadow-xl flex items-center space-x-4 hover:shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 ease-out transform hover:-translate-y-1 border border-gray-200/50 dark:border-gray-700/50">
                     <img
                       src="https://i.pravatar.cc/40?u=c"
                       alt="Mentor 3"
-                      className="w-10 h-10 rounded-full"
+                      className="w-12 h-12 rounded-full ring-2 ring-cyan-500/20 hover:ring-cyan-500/40 transition-all duration-300"
                     />
                     <div>
-                      <p className="font-bold text-gray-900 dark:text-white">
+                      <p className="font-bold text-gray-900 dark:text-white text-base">
                         Maria Rodriguez
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -270,8 +270,8 @@ const LandingPage = () => {
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10">
               Join thousands of students, alumni, and faculty who are already leveraging ConneQt to advance their careers and foster lifelong connections.
             </p>
-            <button className="px-10 py-4 text-lg font-bold text-white bg-cyan-600 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-700 transition-all transform hover:scale-105">
-              Sign Up for Free
+            <button className="group px-12 py-5 text-lg font-bold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full shadow-2xl shadow-cyan-500/40 hover:from-cyan-700 hover:to-cyan-800 hover:shadow-3xl hover:shadow-cyan-500/50 transition-all duration-500 ease-out transform hover:scale-110">
+              Sign Up for Free <FiArrowRight className="inline ml-3 group-hover:translate-x-2 transition-transform duration-300" />
             </button>
           </div>
         </section>
@@ -289,13 +289,13 @@ const LandingPage = () => {
                 Professional networking for campus communities.
               </p>
               <div className="flex space-x-4 mt-6">
-                <a href="#" className="text-gray-500 hover:text-cyan-500">
+                <a href="#" className="text-gray-500 hover:text-cyan-500 transition-all duration-300 ease-out transform hover:scale-110 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                   <FaTwitter size={20} />
                 </a>
-                <a href="#" className="text-gray-500 hover:text-cyan-500">
+                <a href="#" className="text-gray-500 hover:text-cyan-500 transition-all duration-300 ease-out transform hover:scale-110 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                   <FaLinkedin size={20} />
                 </a>
-                <a href="#" className="text-gray-500 hover:text-cyan-500">
+                <a href="#" className="text-gray-500 hover:text-cyan-500 transition-all duration-300 ease-out transform hover:scale-110 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                   <FaGithub size={20} />
                 </a>
               </div>
@@ -308,7 +308,7 @@ const LandingPage = () => {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-600 dark:text-gray-400 hover:text-cyan-500"
+                    className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out hover:translate-x-1"
                   >
                     Features
                   </a>
@@ -316,7 +316,7 @@ const LandingPage = () => {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-600 dark:text-gray-400 hover:text-cyan-500"
+                    className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out hover:translate-x-1"
                   >
                     Pricing
                   </a>
@@ -324,7 +324,7 @@ const LandingPage = () => {
                 <li>
                   <a
                     href="#"
-                    className="text-gray-600 dark:text-gray-400 hover:text-cyan-500"
+                    className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out hover:translate-x-1"
                   >
                     Demo
                   </a>

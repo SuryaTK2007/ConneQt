@@ -120,11 +120,10 @@ const LandingPage = () => {
           <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-white via-white/50 to-transparent dark:from-gray-900 dark:via-gray-900/50 dark:to-transparent"></div>
           <div className="relative z-10 max-w-4xl">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 pb-2">
-              The Future of Campus Networking
+              Your Campus Professional Network
             </h1>
             <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 mt-4 mb-10 max-w-2xl mx-auto">
-              ConneQt is a decentralized platform connecting students, alumni,
-              and faculty through shared interests and projects.
+              Connect with alumni, find mentors, discover events, and build lasting professional relationships within your campus community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-3 font-bold text-white bg-cyan-600 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-700 transition-all transform hover:scale-105">
@@ -141,24 +140,20 @@ const LandingPage = () => {
         <section id="features" className="py-24 bg-gray-50 dark:bg-gray-900/50">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Unlock Your Potential
+              Professional Networking for Campus
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-16">
-              Discover the tools and connections you need to succeed in your
-              academic and professional life.
+              Bridge the gap between academic life and professional success with our comprehensive campus networking platform.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <FeatureCard icon={<FiLink />} title="Decentralized Identity">
-                Own your data and control your digital identity with our
-                blockchain-powered profiles.
+              <FeatureCard icon={<FiUsers />} title="Alumni Connections">
+                Connect with graduates in your field, get career insights, and build professional relationships that last beyond graduation.
               </FeatureCard>
-              <FeatureCard icon={<FiCode />} title="Project Collaboration">
-                Find and contribute to innovative projects posted by peers and
-                faculty.
+              <FeatureCard icon={<FiAward />} title="Skill Endorsements">
+                Showcase your abilities and get endorsed by peers, faculty, and alumni to build your professional credibility.
               </FeatureCard>
-              <FeatureCard icon={<FiZap />} title="Skill-Based Matching">
-                Connect with mentors and collaborators based on skills and
-                interests, not just majors.
+              <FeatureCard icon={<FiCalendar />} title="Smart Event Discovery">
+                Never miss career fairs, workshops, or networking events with personalized recommendations and real-time notifications.
               </FeatureCard>
             </div>
           </div>
@@ -170,12 +165,10 @@ const LandingPage = () => {
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
                 <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                  Guidance from Industry Leaders
+                  AI-Powered Mentorship Matching
                 </h2>
                 <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-                  Our mentorship program connects you with experienced alumni
-                  and faculty who are dedicated to helping you navigate your
-                  career path.
+                  Get matched with the perfect mentor based on your career goals, interests, and skills. Our intelligent system connects you with alumni and faculty who can provide valuable guidance and industry insights.
                 </p>
                 <button className="px-8 py-3 font-bold text-white bg-cyan-600 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-700 transition-all transform hover:scale-105">
                   Find a Mentor
@@ -242,26 +235,25 @@ const LandingPage = () => {
         <section id="events" className="py-24 bg-gray-50 dark:bg-gray-900/50">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Campus Hotspots
+              Unified Campus Events Hub
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-16">
-              Stay in the loop with workshops, hackathons, and networking events
-              happening on campus.
+              Discover career fairs, guest lectures, cultural festivals, and workshops all in one place. Get personalized recommendations and never miss opportunities that matter to you.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <EventCard
-                date={{ day: "28", month: "OCT" }}
-                title="Intro to Quantum Computing"
-                category="Workshop"
+                date={{ day: "15", month: "DEC" }}
+                title="Tech Industry Career Fair"
+                category="Career Fair"
               />
               <EventCard
-                date={{ day: "05", month: "NOV" }}
-                title="Web3 & Decentralization Summit"
-                category="Conference"
+                date={{ day: "22", month: "DEC" }}
+                title="Alumni Success Stories"
+                category="Guest Lecture"
               />
               <EventCard
-                date={{ day: "12", month: "NOV" }}
-                title="Founder & Investor Mixer"
+                date={{ day: "08", month: "JAN" }}
+                title="Professional Networking Mixer"
                 category="Networking"
               />
             </div>
@@ -273,11 +265,10 @@ const LandingPage = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/20 to-transparent dark:from-cyan-900/30 dark:to-transparent"></div>
           <div className="container mx-auto px-4 text-center relative">
             <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Ready to Build the Future?
+              Start Building Your Professional Network Today
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-10">
-              Join ConneQt today and become part of a thriving community of
-              innovators and leaders.
+              Join thousands of students, alumni, and faculty who are already leveraging ConneQt to advance their careers and foster lifelong connections.
             </p>
             <button className="px-10 py-4 text-lg font-bold text-white bg-cyan-600 rounded-full shadow-lg shadow-cyan-500/30 hover:bg-cyan-700 transition-all transform hover:scale-105">
               Sign Up for Free
@@ -295,7 +286,7 @@ const LandingPage = () => {
                 Conne<span className="text-cyan-500">Q</span>t
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                The future of campus networking.
+                Professional networking for campus communities.
               </p>
               <div className="flex space-x-4 mt-6">
                 <a href="#" className="text-gray-500 hover:text-cyan-500">

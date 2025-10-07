@@ -1,30 +1,17 @@
 import React from 'react';
-import { FiCalendar, FiBookOpen, FiMessageCircle, FiStar } from 'react-icons/fi';
+import EventCard from '../components/home/EventCard';
+import BottomNavigation from '../components/home/BottomNavigation';
 
 const HomePage = () => {
   const eventPosts = [
-    {
-      id: 1,
-      title: "Tech Career Fair 2024",
-      date: "March 15, 2024",
-      image: "https://via.placeholder.com/400x250/0891b2/ffffff?text=Tech+Career+Fair",
-      type: "Career Event"
-    },
-    {
-      id: 2,
-      title: "Alumni Networking Night",
-      date: "March 20, 2024",
-      image: "https://via.placeholder.com/400x250/06b6d4/ffffff?text=Alumni+Night",
-      type: "Networking"
-    },
-    {
-      id: 3,
-      title: "Workshop: Resume Building",
-      date: "March 25, 2024",
-      image: "https://via.placeholder.com/400x250/0e7490/ffffff?text=Resume+Workshop",
-      type: "Workshop"
-    }
+    { id: 1, title: 'Tech Career Fair 2024', date: 'March 15, 2024', location: 'Main Auditorium', type: 'Career Event', icon: '💼', bgColor: 'bg-gradient-to-br from-blue-500 to-cyan-600' },
+    { id: 2, title: 'Alumni Networking Night', date: 'March 20, 2024', location: 'Student Center', type: 'Networking', icon: '🤝', bgColor: 'bg-gradient-to-br from-purple-500 to-pink-600' },
+    { id: 3, title: 'Workshop: Resume Building', date: 'March 25, 2024', location: 'Room 201', type: 'Workshop', icon: '📝', bgColor: 'bg-gradient-to-br from-green-500 to-teal-600' },
+    { id: 4, title: 'Startup Pitch Competition', date: 'March 28, 2024', location: 'Innovation Hub', type: 'Competition', icon: '🚀', bgColor: 'bg-gradient-to-br from-orange-500 to-red-600' },
+    { id: 5, title: 'Industry Panel Discussion', date: 'April 2, 2024', location: 'Conference Hall', type: 'Panel', icon: '🎯', bgColor: 'bg-gradient-to-br from-indigo-500 to-purple-600' },
+    { id: 6, title: 'Coding Bootcamp', date: 'April 5, 2024', location: 'Computer Lab', type: 'Workshop', icon: '💻', bgColor: 'bg-gradient-to-br from-cyan-500 to-blue-600' }
   ];
+
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
@@ -47,27 +34,7 @@ const HomePage = () => {
           {/* Event Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {eventPosts.map((event) => (
-              <div
-                key={event.id}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50"
-              >
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-6">
-                  <span className="inline-block px-3 py-1 text-xs font-semibold text-cyan-600 bg-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-400 rounded-full mb-3">
-                    {event.type}
-                  </span>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    {event.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">
-                    {event.date}
-                  </p>
-                </div>
-              </div>
+              <EventCard key={event.id} event={event} />
             ))}
           </div>
 
@@ -93,47 +60,7 @@ const HomePage = () => {
         </div>
       </main>
 
-      {/* macOS-style Bottom Navigation */}
-      <nav className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="bg-white/20 dark:bg-gray-800/20 backdrop-blur-2xl rounded-2xl px-6 py-3 border border-white/30 dark:border-gray-700/30 shadow-2xl">
-          <div className="flex items-center space-x-8">
-            <button className="group flex flex-col items-center space-y-1 p-2 rounded-xl hover:bg-white/20 dark:hover:bg-gray-700/20 transition-all duration-300">
-              <FiCalendar className="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-cyan-500 transition-colors duration-300" />
-              <span className="text-xs text-gray-600 dark:text-gray-400 group-hover:text-cyan-500 transition-colors duration-300">
-                Calendar
-              </span>
-            </button>
-            
-            <button className="group flex flex-col items-center space-y-1 p-2 rounded-xl hover:bg-white/20 dark:hover:bg-gray-700/20 transition-all duration-300">
-              <FiBookOpen className="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-cyan-500 transition-colors duration-300" />
-              <span className="text-xs text-gray-600 dark:text-gray-400 group-hover:text-cyan-500 transition-colors duration-300">
-                Works
-              </span>
-            </button>
-            
-            <button className="group flex flex-col items-center space-y-1 p-2 rounded-xl bg-cyan-500/20 border border-cyan-400/30">
-              <FiStar className="w-6 h-6 text-cyan-500" />
-              <span className="text-xs text-cyan-500">
-                Home
-              </span>
-            </button>
-            
-            <button className="group flex flex-col items-center space-y-1 p-2 rounded-xl hover:bg-white/20 dark:hover:bg-gray-700/20 transition-all duration-300">
-              <FiMessageCircle className="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-cyan-500 transition-colors duration-300" />
-              <span className="text-xs text-gray-600 dark:text-gray-400 group-hover:text-cyan-500 transition-colors duration-300">
-                Alumni Chat
-              </span>
-            </button>
-            
-            <button className="group flex flex-col items-center space-y-1 p-2 rounded-xl hover:bg-white/20 dark:hover:bg-gray-700/20 transition-all duration-300">
-              <FiCalendar className="w-6 h-6 text-gray-700 dark:text-gray-300 group-hover:text-cyan-500 transition-colors duration-300" />
-              <span className="text-xs text-gray-600 dark:text-gray-400 group-hover:text-cyan-500 transition-colors duration-300">
-                Events
-              </span>
-            </button>
-          </div>
-        </div>
-      </nav>
+      <BottomNavigation activeTab="home" />
     </div>
   );
 };

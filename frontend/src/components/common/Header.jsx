@@ -1,7 +1,10 @@
 import React from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ isDarkMode, handleThemeToggle }) => {
+  const navigate = useNavigate();
+
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-white/90 dark:bg-gray-900/90 border-b border-gray-200/50 dark:border-gray-800/50 transition-all duration-300">
       <div className="container mx-auto px-4">
@@ -39,12 +42,12 @@ const Header = ({ isDarkMode, handleThemeToggle }) => {
             >
               {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
-            <a
-              href="/auth"
+            <button
+              onClick={() => navigate('/auth')}
               className="hidden sm:inline-block px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full hover:from-cyan-700 hover:to-cyan-800 transition-all duration-300 ease-out transform hover:scale-105 shadow-lg hover:shadow-cyan-500/30"
             >
               Join Now
-            </a>
+            </button>
           </div>
         </div>
       </div>

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiSun, FiMoon } from "react-icons/fi";
 import { useTheme } from "../hooks/useTheme";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,12 +26,16 @@ const AuthPage = () => {
     e.preventDefault();
     if (isLogin) {
       console.log("Login:", { email: formData.email, password: formData.password });
+      // Simulate successful login
+      navigate('/home');
     } else {
       if (formData.password !== formData.confirmPassword) {
         alert("Passwords don't match!");
         return;
       }
       console.log("Signup:", formData);
+      // Simulate successful signup
+      navigate('/home');
     }
   };
 

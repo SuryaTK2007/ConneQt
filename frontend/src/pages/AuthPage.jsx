@@ -55,12 +55,6 @@ const AuthPage = () => {
             >
               Conne<span className="text-cyan-500">Q</span>t
             </a>
-            <button
-              onClick={toggleTheme}
-              className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110"
-            >
-              {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
-            </button>
           </div>
         </div>
       </header>

@@ -37,12 +37,6 @@ const Header = ({ isDarkMode, handleThemeToggle }) => {
           </nav>
           <div className="flex items-center space-x-4">
             <button
-              onClick={handleThemeToggle}
-              className="text-gray-600 dark:text-gray-400 hover:text-cyan-500 transition-all duration-300 ease-out p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-110"
-            >
-              {isDarkMode ? <FiSun size={20} /> : <FiMoon size={20} />}
-            </button>
-            <button
               onClick={() => navigate('/auth')}
               className="hidden sm:inline-block px-6 py-3 text-sm font-semibold text-white bg-gradient-to-r from-cyan-600 to-cyan-700 rounded-full hover:from-cyan-700 hover:to-cyan-800 transition-all duration-300 ease-out transform hover:scale-105 shadow-lg hover:shadow-cyan-500/30"
             >

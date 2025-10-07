@@ -2,6 +2,12 @@
 
 A modern campus social network platform that connects students with alumni and faculty for professional networking, mentorship, and event discovery.
 
+## Team Members:
+> - [Saumyajit Purakayastha](https://github.com/agspades)
+> - [Shankar L](https://github.com/Shankar-CSE)
+> - [Surya TK](https://github.com/suryatk2007)
+> - [Yaazhvendhan M](https://github.com/yaazhvendhan)
+
 ## Features
 
 - **Professional Networking**: Connect with alumni and faculty members

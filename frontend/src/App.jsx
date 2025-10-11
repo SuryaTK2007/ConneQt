@@ -13,6 +13,11 @@ import AlumniChatPage from './pages/AlumniChatPage';
 import EventsPage from './pages/EventsPage';
 import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
+import JobBoardPage from './pages/JobBoardPage';
+import JobDetailPage from './pages/JobDetailPage';
+import CompanyProfilePage from './pages/CompanyProfilePage';
+import MyApplicationsPage from './pages/MyApplicationsPage';
+import ReferralManagementPage from './pages/ReferralManagementPage';
 
 function App() {
   return (
@@ -83,6 +88,46 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs"
+            element={
+              <ProtectedRoute>
+                <JobBoardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/jobs/:jobId"
+            element={
+              <ProtectedRoute>
+                <JobDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/companies/:companyName"
+            element={
+              <ProtectedRoute>
+                <CompanyProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-applications"
+            element={
+              <ProtectedRoute>
+                <MyApplicationsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/referrals"
+            element={
+              <ProtectedRoute>
+                <ReferralManagementPage />
               </ProtectedRoute>
             }
           />

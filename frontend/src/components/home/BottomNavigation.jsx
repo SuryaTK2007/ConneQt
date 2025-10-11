@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiCalendar, FiBookOpen, FiMessageCircle, FiHome, FiUsers } from 'react-icons/fi';
+import { FiCalendar, FiBookOpen, FiMessageCircle, FiHome, FiUsers, FiBriefcase } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const BottomNavigation = () => {
@@ -9,8 +9,8 @@ const BottomNavigation = () => {
   const navItems = [
     { id: 'home', icon: FiHome, label: 'Home', path: '/home' },
     { id: 'connections', icon: FiUsers, label: 'Friends', path: '/connections' },
+    { id: 'jobs', icon: FiBriefcase, label: 'Jobs', path: '/jobs' },
     { id: 'events', icon: FiBookOpen, label: 'Events', path: '/events' },
-    { id: 'calendar', icon: FiCalendar, label: 'Calendar', path: '/calendar' },
     { id: 'alumni', icon: FiMessageCircle, label: 'Chat', path: '/alumni-chat' }
   ];
 
@@ -27,8 +27,8 @@ const BottomNavigation = () => {
                 key={item.id}
                 onClick={() => navigate(item.path)}
                 className={`relative flex flex-col items-center justify-center py-3 px-2 transition-all duration-300 ${isActive
-                    ? 'text-cyan-600 dark:text-cyan-400'
-                    : 'text-gray-600 dark:text-gray-400'
+                  ? 'text-cyan-600 dark:text-cyan-400'
+                  : 'text-gray-600 dark:text-gray-400'
                   }`}
               >
                 {/* Active Indicator */}

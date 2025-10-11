@@ -37,6 +37,13 @@ const AppHeader = () => {
     // Get page title based on current route
     const getPageTitle = () => {
         const path = location.pathname;
+        if (path.startsWith('/jobs/') && path !== '/jobs') {
+            return 'Job Details';
+        }
+        if (path.startsWith('/companies/')) {
+            return 'Company Profile';
+        }
+
         switch (path) {
             case '/home':
                 return 'Home';
@@ -54,6 +61,12 @@ const AppHeader = () => {
                 return 'Settings';
             case '/profile':
                 return 'Profile';
+            case '/jobs':
+                return 'Job Board';
+            case '/my-applications':
+                return 'My Applications';
+            case '/referrals':
+                return 'Referrals';
             default:
                 return 'ConneQt';
         }

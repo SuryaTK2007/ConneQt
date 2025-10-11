@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import PageContainer from '../components/common/PageContainer';
 import LoadingStates from '../components/common/LoadingStates';
+import { databases } from '../lib/appwrite';
 
 const JobBoardPage = () => {
     const navigate = useNavigate();
@@ -27,110 +28,26 @@ const JobBoardPage = () => {
         company: 'all'
     });
     const [bookmarkedJobs, setBookmarkedJobs] = useState(new Set());
-
-    // Mock job data
-    const [jobs] = useState([
-        {
-            id: 1,
-            title: 'Software Engineer Intern',
-            company: 'Google',
-            location: 'Bangalore, India',
-            type: 'Internship',
-            experience: 'Entry Level',
-            salary: '₹50,000/month',
-            posted: '2 days ago',
-            description: 'Join our engineering team to work on cutting-edge projects...',
-            skills: ['React', 'JavaScript', 'Python', 'MongoDB'],
-            applicants: 156,
-            hasAlumni: true,
-            alumniCount: 3,
-            companyLogo: '🔍'
-        },
-        {
-            id: 2,
-            title: 'Frontend Developer',
-            company: 'Microsoft',
-            location: 'Hyderabad, India',
-            type: 'Full-time',
-            experience: '1-3 years',
-            salary: '₹8-12 LPA',
-            posted: '1 week ago',
-            description: 'Build amazing user experiences with cutting-edge technology...',
-            skills: ['React', 'TypeScript', 'Azure', 'GraphQL'],
-            applicants: 89,
-            hasAlumni: true,
-            alumniCount: 2,
-            companyLogo: '🪟'
-        },
-        {
-            id: 3,
-            title: 'Data Science Intern',
-            company: 'Amazon',
-            location: 'Chennai, India',
-            type: 'Internship',
-            experience: 'Entry Level',
-            salary: '₹45,000/month',
-            posted: '3 days ago',
-            description: 'Work with big data and machine learning models...',
-            skills: ['Python', 'Machine Learning', 'SQL', 'AWS'],
-            applicants: 203,
-            hasAlumni: false,
-            alumniCount: 0,
-            companyLogo: '📦'
-        },
-        {
-            id: 4,
-            title: 'Product Manager',
-            company: 'Flipkart',
-            location: 'Bangalore, India',
-            type: 'Full-time',
-            experience: '2-5 years',
-            salary: '₹15-20 LPA',
-            posted: '5 days ago',
-            description: 'Lead product strategy and execution for e-commerce platform...',
-            skills: ['Product Strategy', 'Analytics', 'Agile', 'SQL'],
-            applicants: 67,
-            hasAlumni: true,
-            alumniCount: 1,
-            companyLogo: '🛒'
-        },
-        {
-            id: 5,
-            title: 'DevOps Engineer',
-            company: 'Zomato',
-            location: 'Gurugram, India',
-            type: 'Full-time',
-            experience: '1-3 years',
-            salary: '₹10-15 LPA',
-            posted: '1 week ago',
-            description: 'Manage infrastructure and deployment pipelines...',
-            skills: ['Docker', 'Kubernetes', 'AWS', 'Jenkins'],
-            applicants: 45,
-            hasAlumni: false,
-            alumniCount: 0,
-            companyLogo: '🍕'
-        },
-        {
-            id: 6,
-            title: 'UI/UX Design Intern',
-            company: 'Adobe',
-            location: 'Noida, India',
-            type: 'Internship',
-            experience: 'Entry Level',
-            salary: '₹35,000/month',
-            posted: '4 days ago',
-            description: 'Create beautiful and intuitive user experiences...',
-            skills: ['Figma', 'Adobe XD', 'Prototyping', 'User Research'],
-            applicants: 134,
-            hasAlumni: true,
-            alumniCount: 2,
-            companyLogo: '🎨'
-        }
-    ]);
+    const [jobs, setJobs] = useState([]);
 
     useEffect(() => {
-        // Simulate loading
-        setTimeout(() => setLoading(false), 1000);
+        const fetchJobs = async () => {
+            try {
+                console.log('Fetching jobs from database...');
+                const response = await databases.listDocuments({
+                    databaseId: 'jobs_database',
+                    collectionId: 'jobs_collection'
+                });
+                console.log('Jobs fetched:', response.documents);
+                setJobs(response.documents);
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchJobs();
     }, []);
 
     const handleBookmark = (jobId) => {
@@ -153,7 +70,7 @@ const JobBoardPage = () => {
     const filteredJobs = jobs.filter(job => {
         const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
             job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            job.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
+            job.skills.toLowerCase().includes(searchQuery.toLowerCase());
 
         const matchesType = selectedFilters.type === 'all' || job.type === selectedFilters.type;
         const matchesLocation = selectedFilters.location === 'all' || job.location.includes(selectedFilters.location);
@@ -162,12 +79,29 @@ const JobBoardPage = () => {
         return matchesSearch && matchesType && matchesLocation && matchesExperience;
     });
 
+    console.log('Jobs from database:', jobs);
+    console.log('Filtered jobs:', filteredJobs);
+    console.log('Search query:', searchQuery);
+    console.log('Selected filters:', selectedFilters);
+
+    // Function to get company logo
+    const getCompanyLogo = (companyName) => {
+        const logos = {
+            'Google': '🔍',
+            'Microsoft': '🪟',
+            'Flipkart': '🛒',
+            'Zomato': '🍕',
+            'Adobe': '🎨'
+        };
+        return logos[companyName] || '🏢';
+    };
+
     const JobCard = ({ job }) => (
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:shadow-xl transition-all duration-300 group">
             <div className="flex justify-between items-start mb-4">
                 <div className="flex items-start space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center text-white text-2xl">
-                        {job.companyLogo}
+                        {getCompanyLogo(job.company)}
                     </div>
                     <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
@@ -179,11 +113,11 @@ const JobBoardPage = () => {
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
-                        handleBookmark(job.id);
+                        handleBookmark(job.$id);
                     }}
-                    className={`p-2 rounded-lg transition-colors ${bookmarkedJobs.has(job.id)
-                            ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400'
-                            : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400'
+                    className={`p-2 rounded-lg transition-colors ${bookmarkedJobs.has(job.$id)
+                        ? 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400'
                         }`}
                 >
                     <FiBookmark className="w-5 h-5" />
@@ -214,7 +148,7 @@ const JobBoardPage = () => {
             </p>
 
             <div className="flex flex-wrap gap-1 mb-4">
-                {job.skills.slice(0, 4).map((skill, index) => (
+                {job.skills.split(',').map(skill => skill.trim()).slice(0, 4).map((skill, index) => (
                     <span
                         key={index}
                         className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-lg"
@@ -222,9 +156,9 @@ const JobBoardPage = () => {
                         {skill}
                     </span>
                 ))}
-                {job.skills.length > 4 && (
+                {job.skills.split(',').length > 4 && (
                     <span className="px-2 py-1 text-gray-500 text-xs">
-                        +{job.skills.length - 4} more
+                        +{job.skills.split(',').length - 4} more
                     </span>
                 )}
             </div>
@@ -235,15 +169,13 @@ const JobBoardPage = () => {
                         <FiUsers className="w-4 h-4 mr-1" />
                         {job.applicants} applicants
                     </div>
-                    {job.hasAlumni && (
-                        <div className="flex items-center text-green-600 dark:text-green-400">
-                            <FiTrendingUp className="w-4 h-4 mr-1" />
-                            {job.alumniCount} alumni
-                        </div>
-                    )}
+                    <div className="flex items-center">
+                        <FiClock className="w-4 h-4 mr-1" />
+                        {job.posted}
+                    </div>
                 </div>
                 <button
-                    onClick={() => navigate(`/jobs/${job.id}`)}
+                    onClick={() => navigate(`/jobs/${job.$id}`)}
                     className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all duration-300 text-sm font-medium"
                 >
                     View Details
@@ -388,7 +320,7 @@ const JobBoardPage = () => {
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {filteredJobs.map((job) => (
-                        <JobCard key={job.id} job={job} />
+                        <JobCard key={job.$id} job={job} />
                     ))}
                 </div>
             )}

@@ -20,6 +20,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PageContainer from '../components/common/PageContainer';
 import LoadingStates from '../components/common/LoadingStates';
+import { databases } from '../lib/appwrite';
 
 const JobDetailPage = () => {
     const { id } = useParams();
@@ -32,102 +33,35 @@ const JobDetailPage = () => {
     const [selectedAlumni, setSelectedAlumni] = useState(null);
     const [referralMessage, setReferralMessage] = useState('');
 
-    // Mock job data (in real app, fetch by ID)
+    // Fetch job data from database
     const [job, setJob] = useState(null);
 
-    const mockJobs = {
-        1: {
-            id: 1,
-            title: 'Software Engineer Intern',
-            company: 'Google',
-            location: 'Bangalore, India',
-            type: 'Internship',
-            experience: 'Entry Level',
-            salary: '₹50,000/month',
-            posted: '2 days ago',
-            deadline: '2024-11-15',
-            description: `Join Google's engineering team to work on cutting-edge projects that impact billions of users worldwide. As a Software Engineer Intern, you'll collaborate with experienced engineers, contribute to real products, and gain hands-on experience with large-scale distributed systems.
-
-Key Responsibilities:
-• Design and implement software solutions for complex problems
-• Collaborate with cross-functional teams to deliver high-quality products
-• Write clean, efficient, and well-documented code
-• Participate in code reviews and engineering discussions
-• Learn and apply industry best practices
-
-What we offer:
-• Mentorship from senior engineers
-• Exposure to cutting-edge technologies
-• Collaborative and innovative work environment
-• Competitive compensation and benefits
-• Opportunity for full-time conversion`,
-            requirements: [
-                'Currently pursuing Bachelor\'s or Master\'s in Computer Science or related field',
-                'Strong programming skills in Python, Java, or C++',
-                'Understanding of data structures and algorithms',
-                'Experience with web development frameworks (React, Angular, etc.)',
-                'Knowledge of databases and SQL',
-                'Excellent problem-solving skills',
-                'Strong communication and teamwork abilities'
-            ],
-            skills: ['React', 'JavaScript', 'Python', 'MongoDB', 'Docker', 'Git'],
-            applicants: 156,
-            hasAlumni: true,
-            companyLogo: '🔍',
-            companyInfo: {
-                name: 'Google',
-                size: '100,000+ employees',
-                industry: 'Technology',
-                founded: '1998',
-                website: 'https://google.com',
-                description: 'Global technology company focused on search, advertising, and cloud computing.'
-            },
-            alumni: [
-                {
-                    id: 1,
-                    name: 'Rahul Sharma',
-                    position: 'Senior Software Engineer',
-                    graduationYear: '2020',
-                    department: 'Computer Science',
-                    linkedin: 'linkedin.com/in/rahulsharma',
-                    email: 'rahul.sharma@sece.ac.in',
-                    yearsAtCompany: 2
-                },
-                {
-                    id: 2,
-                    name: 'Priya Patel',
-                    position: 'Product Manager',
-                    graduationYear: '2019',
-                    department: 'Information Technology',
-                    linkedin: 'linkedin.com/in/priyapatel',
-                    email: 'priya.patel@sece.ac.in',
-                    yearsAtCompany: 3
-                },
-                {
-                    id: 3,
-                    name: 'Amit Kumar',
-                    position: 'Data Engineer',
-                    graduationYear: '2021',
-                    department: 'Computer Science',
-                    linkedin: 'linkedin.com/in/amitkumar',
-                    email: 'amit.kumar@sece.ac.in',
-                    yearsAtCompany: 1
-                }
-            ]
-        }
-    };
-
     useEffect(() => {
-        // Simulate API call
-        setTimeout(() => {
-            const jobData = mockJobs[id];
-            if (jobData) {
-                setJob(jobData);
+        const fetchJob = async () => {
+            // Check if id exists
+            if (!id) {
+                console.error('No job ID provided');
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const response = await databases.getDocument({
+                    databaseId: 'jobs_database',
+                    collectionId: 'jobs_collection',
+                    documentId: id
+                });
+                setJob(response);
                 // Check if user has already applied (mock check)
                 setHasApplied(Math.random() > 0.7);
+            } catch (error) {
+                console.error('Error fetching job details:', error);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
-        }, 1000);
+        };
+
+        fetchJob();
     }, [id]);
 
     const handleApply = async () => {
@@ -173,8 +107,8 @@ What we offer:
                                 key={alumni.id}
                                 onClick={() => setSelectedAlumni(alumni)}
                                 className={`w-full p-3 rounded-xl border text-left transition-all ${selectedAlumni?.id === alumni.id
-                                        ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20'
-                                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                                    ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20'
+                                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                                     }`}
                             >
                                 <div className="font-medium text-gray-900 dark:text-white">{alumni.name}</div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { 
-  FiBriefcase, 
-  FiTrendingUp, 
-  FiUsers, 
+import {
+  FiBriefcase,
+  FiTrendingUp,
+  FiUsers,
   FiArrowRight,
   FiMapPin,
   FiClock,
@@ -251,7 +251,7 @@ const HomePage = () => {
 
       {/* Additional Resources */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div 
+        <div
           onClick={() => navigate('/companies/google')}
           className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 border border-purple-200/50 dark:border-purple-700/50 transition-all duration-300 hover:shadow-lg cursor-pointer group"
         >
@@ -273,7 +273,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div 
+        <div
           onClick={() => navigate('/events')}
           className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 rounded-2xl p-6 border border-green-200/50 dark:border-green-700/50 transition-all duration-300 hover:shadow-lg cursor-pointer group"
         >

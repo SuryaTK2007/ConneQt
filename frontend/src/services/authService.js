@@ -1,5 +1,5 @@
 import { account } from "../lib/appwrite";
-import { ID } from "appwrite";
+import { ID, OAuthProvider } from "appwrite";
 
 class AuthService {
   /**
@@ -55,6 +55,39 @@ class AuthService {
     } catch (error) {
       console.error("Logout error:", error);
       throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Login with Google OAuth
+   * @param {string} successUrl - URL to redirect after successful login (optional)
+   * @param {string} failureUrl - URL to redirect after failed login (optional)
+   * @returns {Promise} Initiates OAuth flow
+   */
+  async loginWithGoogle(successUrl, failureUrl) {
+    try {
+      const currentUrl = window.location.origin;
+      return account.createOAuth2Session(
+        OAuthProvider.Google,
+        successUrl || `${currentUrl}/oauth/callback`,
+        failureUrl || `${currentUrl}/auth`
+      );
+    } catch (error) {
+      console.error("Google login error:", error);
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Check if current session is from OAuth login
+   * @returns {Promise<boolean>}
+   */
+  async isOAuthSession() {
+    try {
+      const session = await this.getSession();
+      return session && session.provider !== "email";
+    } catch (error) {
+      return false;
     }
   }
 

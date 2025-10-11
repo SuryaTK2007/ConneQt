@@ -8,6 +8,7 @@ const AuthContext = createContext({
     login: async () => { },
     signup: async () => { },
     logout: async () => { },
+    loginWithGoogle: async () => { },
     isAuthenticated: false,
 });
 
@@ -86,12 +87,24 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const loginWithGoogle = async () => {
+        try {
+            // This will redirect to Google OAuth, so no need to handle response here
+            await authService.loginWithGoogle();
+            return { success: true };
+        } catch (error) {
+            console.error('Google login failed:', error);
+            return { success: false, error: error.message };
+        }
+    };
+
     const value = {
         user,
         loading,
         login,
         signup,
         logout,
+        loginWithGoogle,
         isAuthenticated: !!user,
     };
 

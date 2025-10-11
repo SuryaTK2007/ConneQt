@@ -1,5 +1,5 @@
 import { databases } from "../lib/appwrite";
-import { ID } from "appwrite";
+import { ID, Query } from "appwrite";
 
 const DATABASE_ID = "main_db";
 const USER_PROFILES_COLLECTION_ID = "user_profiles";
@@ -43,7 +43,7 @@ class UserService {
       const response = await databases.listDocuments(
         DATABASE_ID,
         USER_PROFILES_COLLECTION_ID,
-        [`equal("user_id", "${userId}")`]
+        [Query.equal("user_id", userId)]
       );
 
       return response.documents.length > 0 ? response.documents[0] : null;

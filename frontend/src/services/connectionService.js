@@ -1,0 +1,383 @@
+import { databases } from "../lib/appwrite";
+import { ID, Query } from "appwrite";
+import GooglePeopleService from "./googlePeopleService";
+
+const DATABASE_ID = "main_db";
+const CONNECTIONS_COLLECTION_ID = "user_connections";
+const ENHANCED_PROFILES_COLLECTION_ID = "enhanced_profiles";
+
+/**
+ * Connection Recommendation Service
+ * Manages fetching Google connections and generating recommendations
+ */
+class ConnectionService {
+  constructor() {
+    this.googlePeople = new GooglePeopleService();
+  }
+
+  /**
+   * Sync user's Google profile and connections data
+   * @param {string} userId - Appwrite user ID
+   * @returns {Promise<Object>} Sync results
+   */
+  async syncGoogleData(userId) {
+    try {
+      console.log("Starting Google data sync for user:", userId);
+
+      // Fetch user's own profile from Google
+      const userProfile = await this.googlePeople.getMyProfile();
+      console.log("Fetched user profile:", userProfile);
+
+      // Save/update enhanced profile
+      await this.saveEnhancedProfile(userId, userProfile);
+
+      // Fetch user's Google connections
+      const connections = await this.googlePeople.getConnections();
+      console.log(`Fetched ${connections.length} connections`);
+
+      // Generate recommendations
+      const recommendations = this.googlePeople.generateRecommendations(
+        userProfile,
+        connections
+      );
+      console.log(`Generated ${recommendations.length} recommendations`);
+
+      // Save recommendations to database
+      await this.saveRecommendations(userId, recommendations);
+
+      return {
+        success: true,
+        userProfile,
+        connectionsCount: connections.length,
+        recommendationsCount: recommendations.length,
+        recommendations: recommendations.slice(0, 10), // Return top 10 for immediate display
+      };
+    } catch (error) {
+      console.error("Failed to sync Google data:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save or update user's enhanced profile
+   * @param {string} userId - Appwrite user ID
+   * @param {Object} profileData - Google profile data
+   * @returns {Promise}
+   */
+  async saveEnhancedProfile(userId, profileData) {
+    try {
+      // Check if enhanced profile already exists
+      const existingProfiles = await databases.listDocuments(
+        DATABASE_ID,
+        ENHANCED_PROFILES_COLLECTION_ID,
+        [Query.equal("user_id", userId)]
+      );
+
+      const profileDoc = {
+        user_id: userId,
+        skills: profileData.skills || [],
+        interests: profileData.interests || [],
+        organizations: JSON.stringify(profileData.organizations || []),
+        location: profileData.location || "",
+        bio: profileData.bio || "",
+        occupation: profileData.occupation || "",
+        photo_url: profileData.photo || "",
+        last_updated: new Date().toISOString(),
+      };
+
+      if (existingProfiles.documents.length > 0) {
+        // Update existing profile
+        await databases.updateDocument(
+          DATABASE_ID,
+          ENHANCED_PROFILES_COLLECTION_ID,
+          existingProfiles.documents[0].$id,
+          profileDoc
+        );
+      } else {
+        // Create new profile
+        await databases.createDocument(
+          DATABASE_ID,
+          ENHANCED_PROFILES_COLLECTION_ID,
+          ID.unique(),
+          profileDoc
+        );
+      }
+    } catch (error) {
+      console.error("Failed to save enhanced profile:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save connection recommendations to database
+   * @param {string} userId - Appwrite user ID
+   * @param {Array} recommendations - Array of connection recommendations
+   * @returns {Promise}
+   */
+  async saveRecommendations(userId, recommendations) {
+    try {
+      // Clear existing recommendations for this user
+      await this.clearExistingRecommendations(userId);
+
+      // Save new recommendations
+      const savePromises = recommendations.map(async (recommendation) => {
+        const connectionDoc = {
+          user_id: userId,
+          connection_id: recommendation.id,
+          connection_name: recommendation.name,
+          connection_email: recommendation.email || "",
+          similarity_score: recommendation.similarityScore,
+          recommendation_reasons: recommendation.recommendationReasons || [],
+          profile_data: JSON.stringify({
+            photo: recommendation.photo,
+            organizations: recommendation.organizations,
+            location: recommendation.location,
+            skills: recommendation.skills,
+            interests: recommendation.interests,
+            bio: recommendation.bio,
+            occupation: recommendation.occupation,
+          }),
+          created_at: new Date().toISOString(),
+        };
+
+        return databases.createDocument(
+          DATABASE_ID,
+          CONNECTIONS_COLLECTION_ID,
+          ID.unique(),
+          connectionDoc
+        );
+      });
+
+      await Promise.all(savePromises);
+      console.log(
+        `Saved ${recommendations.length} recommendations to database`
+      );
+    } catch (error) {
+      console.error("Failed to save recommendations:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Clear existing recommendations for a user
+   * @param {string} userId - Appwrite user ID
+   * @returns {Promise}
+   */
+  async clearExistingRecommendations(userId) {
+    try {
+      const existingConnections = await databases.listDocuments(
+        DATABASE_ID,
+        CONNECTIONS_COLLECTION_ID,
+        [Query.equal("user_id", userId)]
+      );
+
+      const deletePromises = existingConnections.documents.map((doc) =>
+        databases.deleteDocument(
+          DATABASE_ID,
+          CONNECTIONS_COLLECTION_ID,
+          doc.$id
+        )
+      );
+
+      await Promise.all(deletePromises);
+      console.log(
+        `Cleared ${existingConnections.documents.length} existing recommendations`
+      );
+    } catch (error) {
+      console.error("Failed to clear existing recommendations:", error);
+      // Don't throw here, as this is not critical
+    }
+  }
+
+  /**
+   * Get stored recommendations for a user
+   * @param {string} userId - Appwrite user ID
+   * @param {number} limit - Number of recommendations to fetch
+   * @returns {Promise<Array>} Array of recommendations
+   */
+  async getStoredRecommendations(userId, limit = 20) {
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        CONNECTIONS_COLLECTION_ID,
+        [
+          Query.equal("user_id", userId),
+          Query.orderDesc("similarity_score"),
+          Query.limit(limit),
+        ]
+      );
+
+      return response.documents.map((doc) => ({
+        id: doc.connection_id,
+        name: doc.connection_name,
+        email: doc.connection_email,
+        similarityScore: doc.similarity_score,
+        recommendationReasons: doc.recommendation_reasons || [],
+        profileData: JSON.parse(doc.profile_data || "{}"),
+        createdAt: doc.created_at,
+      }));
+    } catch (error) {
+      console.error("Failed to get stored recommendations:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Get user's enhanced profile
+   * @param {string} userId - Appwrite user ID
+   * @returns {Promise<Object|null>} Enhanced profile or null
+   */
+  async getEnhancedProfile(userId) {
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        ENHANCED_PROFILES_COLLECTION_ID,
+        [Query.equal("user_id", userId)]
+      );
+
+      if (response.documents.length === 0) {
+        return null;
+      }
+
+      const profile = response.documents[0];
+      return {
+        userId: profile.user_id,
+        skills: profile.skills || [],
+        interests: profile.interests || [],
+        organizations: JSON.parse(profile.organizations || "[]"),
+        location: profile.location || "",
+        bio: profile.bio || "",
+        occupation: profile.occupation || "",
+        photoUrl: profile.photo_url || "",
+        lastUpdated: profile.last_updated,
+      };
+    } catch (error) {
+      console.error("Failed to get enhanced profile:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Search for mentors based on criteria
+   * @param {string} userId - Current user ID
+   * @param {Object} criteria - Search criteria
+   * @returns {Promise<Array>} Array of potential mentors
+   */
+  async findMentors(userId, criteria = {}) {
+    try {
+      const recommendations = await this.getStoredRecommendations(userId, 50);
+
+      // Filter for potential mentors
+      const mentors = recommendations.filter((connection) => {
+        const profileData = connection.profileData || {};
+        const reasons = connection.recommendationReasons || [];
+
+        // Check if they're marked as potential mentor
+        const isPotentialMentor = reasons.includes("Potential mentor");
+
+        // Check if they have leadership experience
+        const hasLeadership = profileData.organizations?.some(
+          (org) =>
+            org.title &&
+            (org.title.toLowerCase().includes("manager") ||
+              org.title.toLowerCase().includes("director") ||
+              org.title.toLowerCase().includes("lead") ||
+              org.title.toLowerCase().includes("senior") ||
+              org.title.toLowerCase().includes("principal"))
+        );
+
+        // Apply additional criteria filters
+        let matchesCriteria = true;
+
+        if (criteria.skills && criteria.skills.length > 0) {
+          const connectionSkills = profileData.skills || [];
+          const hasMatchingSkills = criteria.skills.some((skill) =>
+            connectionSkills.some((connSkill) =>
+              connSkill.toLowerCase().includes(skill.toLowerCase())
+            )
+          );
+          matchesCriteria = matchesCriteria && hasMatchingSkills;
+        }
+
+        if (criteria.location) {
+          const connectionLocation = profileData.location || "";
+          const locationMatch = connectionLocation
+            .toLowerCase()
+            .includes(criteria.location.toLowerCase());
+          matchesCriteria = matchesCriteria && locationMatch;
+        }
+
+        if (criteria.industry) {
+          const connectionOrgs = profileData.organizations || [];
+          const industryMatch = connectionOrgs.some((org) =>
+            org.name.toLowerCase().includes(criteria.industry.toLowerCase())
+          );
+          matchesCriteria = matchesCriteria && industryMatch;
+        }
+
+        return (isPotentialMentor || hasLeadership) && matchesCriteria;
+      });
+
+      return mentors.slice(0, 10); // Return top 10 mentors
+    } catch (error) {
+      console.error("Failed to find mentors:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Get connection statistics for a user
+   * @param {string} userId - Appwrite user ID
+   * @returns {Promise<Object>} Connection statistics
+   */
+  async getConnectionStats(userId) {
+    try {
+      const [recommendations, enhancedProfile] = await Promise.all([
+        this.getStoredRecommendations(userId, 1000),
+        this.getEnhancedProfile(userId),
+      ]);
+
+      const mentorCount = recommendations.filter((conn) =>
+        conn.recommendationReasons.includes("Potential mentor")
+      ).length;
+
+      const skillMatches = recommendations.filter((conn) =>
+        conn.recommendationReasons.some((reason) => reason.includes("skill"))
+      ).length;
+
+      const locationMatches = recommendations.filter((conn) =>
+        conn.recommendationReasons.includes("Same location")
+      ).length;
+
+      const companyMatches = recommendations.filter((conn) =>
+        conn.recommendationReasons.some((reason) =>
+          reason.startsWith("Works at")
+        )
+      ).length;
+
+      return {
+        totalRecommendations: recommendations.length,
+        potentialMentors: mentorCount,
+        skillMatches,
+        locationMatches,
+        companyMatches,
+        hasEnhancedProfile: !!enhancedProfile,
+        lastSyncDate: enhancedProfile?.lastUpdated || null,
+      };
+    } catch (error) {
+      console.error("Failed to get connection stats:", error);
+      return {
+        totalRecommendations: 0,
+        potentialMentors: 0,
+        skillMatches: 0,
+        locationMatches: 0,
+        companyMatches: 0,
+        hasEnhancedProfile: false,
+        lastSyncDate: null,
+      };
+    }
+  }
+}
+
+const connectionService = new ConnectionService();
+export default connectionService;

@@ -67,10 +67,20 @@ class AuthService {
   async loginWithGoogle(successUrl, failureUrl) {
     try {
       const currentUrl = window.location.origin;
+
+      // Request additional scopes for Google People API
+      const scopes = [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "https://www.googleapis.com/auth/contacts.readonly",
+        "https://www.googleapis.com/auth/contacts.other.readonly",
+      ];
+
       return account.createOAuth2Session(
         OAuthProvider.Google,
         successUrl || `${currentUrl}/oauth/callback`,
-        failureUrl || `${currentUrl}/auth`
+        failureUrl || `${currentUrl}/auth`,
+        scopes
       );
     } catch (error) {
       console.error("Google login error:", error);

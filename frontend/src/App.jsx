@@ -6,6 +6,7 @@ import OAuthCallback from './components/OAuthCallback';
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import HomePage from './pages/HomePage';
+import ConnectionsPage from './pages/ConnectionsPage';
 import CalendarPage from './pages/CalendarPage';
 import WorksPage from './pages/WorksPage';
 import AlumniChatPage from './pages/AlumniChatPage';
@@ -24,6 +25,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/connections"
+            element={
+              <ProtectedRoute>
+                <ConnectionsPage />
               </ProtectedRoute>
             }
           />

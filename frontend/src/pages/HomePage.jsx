@@ -3,6 +3,7 @@ import { FiLogOut, FiUser, FiChevronDown } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/home/EventCard';
+import ConnectionsWidget from '../components/home/ConnectionsWidget';
 import BottomNavigation from '../components/home/BottomNavigation';
 
 const HomePage = () => {
@@ -97,6 +98,11 @@ const HomePage = () => {
             {eventPosts.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
+          </div>
+
+          {/* Smart Connections Widget */}
+          <div className="mt-12">
+            <ConnectionsWidget />
           </div>
 
           {/* Placeholder for Ads */}

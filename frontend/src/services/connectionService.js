@@ -35,22 +35,23 @@ class ConnectionService {
       const connections = await this.googlePeople.getConnections();
       console.log(`Fetched ${connections.length} connections`);
 
-      // Generate recommendations
-      const recommendations = this.googlePeople.generateRecommendations(
-        userProfile,
+      // Find connections that exist on ConneQt platform
+      const platformConnections = await this.findPlatformConnections(
         connections
       );
-      console.log(`Generated ${recommendations.length} recommendations`);
+      console.log(
+        `Found ${platformConnections.length} connections who are ConneQt users`
+      );
 
-      // Save recommendations to database
-      await this.saveRecommendations(userId, recommendations);
+      // Save platform connections as recommendations
+      await this.saveRecommendations(userId, platformConnections);
 
       return {
         success: true,
         userProfile,
         connectionsCount: connections.length,
-        recommendationsCount: recommendations.length,
-        recommendations: recommendations.slice(0, 10), // Return top 10 for immediate display
+        recommendationsCount: platformConnections.length,
+        recommendations: platformConnections.slice(0, 10), // Return top 10 for immediate display
       };
     } catch (error) {
       console.error("Failed to sync Google data:", error);
@@ -109,6 +110,73 @@ class ConnectionService {
   }
 
   /**
+   * Find Google connections that are ConneQt platform users
+   * @param {Array} googleConnections - Array of Google connections
+   * @returns {Promise<Array>} Array of connections who are ConneQt users
+   */
+  async findPlatformConnections(googleConnections) {
+    try {
+      console.log("Checking which Google connections are ConneQt users...");
+
+      // Get all user profiles from ConneQt database
+      const allUsersResponse = await databases.listDocuments(
+        "main_db", // DATABASE_ID
+        "user_profiles", // USER_PROFILES_COLLECTION_ID
+        [Query.limit(1000)] // Get up to 1000 users
+      );
+
+      const conneQtUsers = allUsersResponse.documents;
+      console.log(`Found ${conneQtUsers.length} ConneQt users in database`);
+
+      // Create a map of ConneQt user emails for fast lookup
+      const emailToUserMap = new Map();
+      conneQtUsers.forEach((user) => {
+        if (user.email) {
+          emailToUserMap.set(user.email.toLowerCase(), user);
+        }
+      });
+
+      // Find Google connections that match ConneQt users
+      const platformConnections = [];
+
+      for (const connection of googleConnections) {
+        if (connection.email) {
+          const conneQtUser = emailToUserMap.get(
+            connection.email.toLowerCase()
+          );
+
+          if (conneQtUser) {
+            // This Google contact is also a ConneQt user!
+            platformConnections.push({
+              ...connection,
+              conneQtUserId: conneQtUser.user_id,
+              conneQtName: conneQtUser.name,
+              joinedAt: conneQtUser.joined_at,
+              isConneQtUser: true,
+              recommendationReasons: [
+                "Friend on ConneQt",
+                "In your Google contacts",
+              ],
+            });
+
+            console.log(
+              `✅ Found match: ${connection.name} (${connection.email}) is a ConneQt user`
+            );
+          }
+        }
+      }
+
+      console.log(
+        `Found ${platformConnections.length} Google contacts who are ConneQt users`
+      );
+      return platformConnections;
+    } catch (error) {
+      console.error("Failed to find platform connections:", error);
+      return []; // Return empty array on error
+    }
+  }
+
+  /**
    * Save connection recommendations to database
    * @param {string} userId - Appwrite user ID
    * @param {Array} recommendations - Array of connection recommendations
@@ -126,7 +194,7 @@ class ConnectionService {
           connection_id: recommendation.id,
           connection_name: recommendation.name,
           connection_email: recommendation.email || "",
-          similarity_score: recommendation.similarityScore,
+          similarity_score: 1.0, // Since these are all confirmed connections, set high score
           recommendation_reasons: recommendation.recommendationReasons || [],
           profile_data: JSON.stringify({
             photo: recommendation.photo,
@@ -136,6 +204,10 @@ class ConnectionService {
             interests: recommendation.interests,
             bio: recommendation.bio,
             occupation: recommendation.occupation,
+            isConneQtUser: recommendation.isConneQtUser || false,
+            conneQtUserId: recommendation.conneQtUserId || null,
+            conneQtName: recommendation.conneQtName || null,
+            joinedAt: recommendation.joinedAt || null,
           }),
           created_at: new Date().toISOString(),
         };
@@ -207,15 +279,22 @@ class ConnectionService {
         ]
       );
 
-      return response.documents.map((doc) => ({
-        id: doc.connection_id,
-        name: doc.connection_name,
-        email: doc.connection_email,
-        similarityScore: doc.similarity_score,
-        recommendationReasons: doc.recommendation_reasons || [],
-        profileData: JSON.parse(doc.profile_data || "{}"),
-        createdAt: doc.created_at,
-      }));
+      return response.documents.map((doc) => {
+        const profileData = JSON.parse(doc.profile_data || "{}");
+        return {
+          id: doc.connection_id,
+          name: doc.connection_name,
+          email: doc.connection_email,
+          similarityScore: doc.similarity_score,
+          recommendationReasons: doc.recommendation_reasons || [],
+          profileData,
+          createdAt: doc.created_at,
+          isConneQtUser: profileData.isConneQtUser || false,
+          conneQtUserId: profileData.conneQtUserId || null,
+          conneQtName: profileData.conneQtName || null,
+          joinedAt: profileData.joinedAt || null,
+        };
+      });
     } catch (error) {
       console.error("Failed to get stored recommendations:", error);
       return [];
@@ -337,30 +416,23 @@ class ConnectionService {
         this.getEnhancedProfile(userId),
       ]);
 
-      const mentorCount = recommendations.filter((conn) =>
-        conn.recommendationReasons.includes("Potential mentor")
+      const conneQtUsers = recommendations.filter(
+        (conn) => conn.isConneQtUser
       ).length;
 
-      const skillMatches = recommendations.filter((conn) =>
-        conn.recommendationReasons.some((reason) => reason.includes("skill"))
+      const googleContacts = recommendations.filter((conn) =>
+        conn.recommendationReasons.includes("In your Google contacts")
       ).length;
 
-      const locationMatches = recommendations.filter((conn) =>
-        conn.recommendationReasons.includes("Same location")
-      ).length;
-
-      const companyMatches = recommendations.filter((conn) =>
-        conn.recommendationReasons.some((reason) =>
-          reason.startsWith("Works at")
-        )
+      const mutualConnections = recommendations.filter((conn) =>
+        conn.recommendationReasons.includes("Friend on ConneQt")
       ).length;
 
       return {
         totalRecommendations: recommendations.length,
-        potentialMentors: mentorCount,
-        skillMatches,
-        locationMatches,
-        companyMatches,
+        conneQtUsers,
+        googleContacts,
+        mutualConnections,
         hasEnhancedProfile: !!enhancedProfile,
         lastSyncDate: enhancedProfile?.lastUpdated || null,
       };
@@ -368,10 +440,9 @@ class ConnectionService {
       console.error("Failed to get connection stats:", error);
       return {
         totalRecommendations: 0,
-        potentialMentors: 0,
-        skillMatches: 0,
-        locationMatches: 0,
-        companyMatches: 0,
+        conneQtUsers: 0,
+        googleContacts: 0,
+        mutualConnections: 0,
         hasEnhancedProfile: false,
         lastSyncDate: null,
       };

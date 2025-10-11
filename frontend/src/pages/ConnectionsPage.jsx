@@ -131,6 +131,12 @@ const ConnectionsPage = () => {
                         <div className="flex items-center justify-between mb-1">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                                 {connection.name}
+                                {connection.isConneQtUser && (
+                                    <span className="ml-2 inline-flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-xs rounded-full">
+                                        <FiCheckCircle className="w-3 h-3 mr-1" />
+                                        ConneQt User
+                                    </span>
+                                )}
                             </h3>
                             {isMentor && (
                                 <span className="flex items-center px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs rounded-full">
@@ -180,16 +186,18 @@ const ConnectionsPage = () => {
                             </div>
                         )}
 
-                        {/* Similarity Score */}
+                        {/* Connection Status & Actions */}
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center text-sm text-gray-500">
-                                <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-2">
-                                    <div
-                                        className="bg-gradient-to-r from-cyan-500 to-blue-600 h-2 rounded-full"
-                                        style={{ width: `${connection.similarityScore * 100}%` }}
-                                    ></div>
-                                </div>
-                                <span>{Math.round(connection.similarityScore * 100)}% match</span>
+                            <div className="flex items-center text-sm">
+                                {connection.isConneQtUser ? (
+                                    <span className="text-green-600 dark:text-green-400 font-medium">
+                                        ✨ Available to connect on ConneQt
+                                    </span>
+                                ) : (
+                                    <span className="text-gray-500">
+                                        Contact via email
+                                    </span>
+                                )}
                             </div>
 
                             {/* Actions */}
@@ -203,12 +211,21 @@ const ConnectionsPage = () => {
                                         <FiMail className="w-4 h-4" />
                                     </button>
                                 )}
-                                <button
-                                    className="p-2 text-gray-500 hover:text-cyan-600 dark:text-gray-400 dark:hover:text-cyan-400 transition-colors"
-                                    title="View profile"
-                                >
-                                    <FiExternalLink className="w-4 h-4" />
-                                </button>
+                                {connection.isConneQtUser ? (
+                                    <button
+                                        className="px-3 py-1 bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-sm rounded-lg hover:from-cyan-700 hover:to-blue-700 transition-all"
+                                        title="Connect on ConneQt"
+                                    >
+                                        Connect
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="p-2 text-gray-500 hover:text-cyan-600 dark:text-gray-400 dark:hover:text-cyan-400 transition-colors"
+                                        title="View Google profile"
+                                    >
+                                        <FiExternalLink className="w-4 h-4" />
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -290,27 +307,24 @@ const ConnectionsPage = () => {
 
                     {/* Stats Cards */}
                     {stats && (
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <StatsCard
                                 icon={FiUsers}
-                                title="Total Recommendations"
-                                value={stats.totalRecommendations}
-                                subtitle={stats.lastSyncDate ? `Last sync: ${new Date(stats.lastSyncDate).toLocaleDateString()}` : 'Never synced'}
+                                title="ConneQt Friends"
+                                value={stats.conneQtUsers}
+                                subtitle="Your Google contacts who use ConneQt"
+                            />
+                            <StatsCard
+                                icon={FiCheckCircle}
+                                title="Google Contacts"
+                                value={stats.googleContacts}
+                                subtitle="Contacts from your Google account"
                             />
                             <StatsCard
                                 icon={FiStar}
-                                title="Potential Mentors"
-                                value={stats.potentialMentors}
-                            />
-                            <StatsCard
-                                icon={FiBriefcase}
-                                title="Skill Matches"
-                                value={stats.skillMatches}
-                            />
-                            <StatsCard
-                                icon={FiMapPin}
-                                title="Location Matches"
-                                value={stats.locationMatches}
+                                title="Mutual Connections"
+                                value={stats.mutualConnections}
+                                subtitle={stats.lastSyncDate ? `Last sync: ${new Date(stats.lastSyncDate).toLocaleDateString()}` : 'Never synced'}
                             />
                         </div>
                     )}
@@ -320,8 +334,8 @@ const ConnectionsPage = () => {
                         <button
                             onClick={() => setActiveTab('recommendations')}
                             className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'recommendations'
-                                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                                 }`}
                         >
                             All Recommendations ({recommendations.length})
@@ -329,8 +343,8 @@ const ConnectionsPage = () => {
                         <button
                             onClick={() => setActiveTab('mentors')}
                             className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${activeTab === 'mentors'
-                                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg'
-                                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-lg'
+                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                                 }`}
                         >
                             Potential Mentors ({mentors.length})

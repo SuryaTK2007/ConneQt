@@ -69,10 +69,10 @@ const ConnectionsWidget = () => {
                     </div>
                     <div>
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Smart Connections
+                            ConneQt Friends
                         </h3>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                            AI-powered network recommendations
+                            Your Google contacts on ConneQt
                         </p>
                     </div>
                 </div>
@@ -94,27 +94,27 @@ const ConnectionsWidget = () => {
                     {/* Stats */}
                     <div className="grid grid-cols-3 gap-4">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
-                                {stats.totalRecommendations}
-                            </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Connections
-                            </div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-                                {stats.potentialMentors}
-                            </div>
-                            <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Mentors
-                            </div>
-                        </div>
-                        <div className="text-center">
                             <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                                {stats.skillMatches}
+                                {stats.conneQtUsers}
                             </div>
                             <div className="text-xs text-gray-600 dark:text-gray-400">
-                                Skill Matches
+                                ConneQt Users
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                {stats.googleContacts}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                Google Contacts
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                {stats.mutualConnections}
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400">
+                                Mutual Friends
                             </div>
                         </div>
                     </div>
@@ -138,16 +138,19 @@ const ConnectionsWidget = () => {
                                             {connection.name}
                                         </div>
                                         <div className="text-xs text-gray-600 dark:text-gray-400">
-                                            {Math.round(connection.similarityScore * 100)}% match
-                                            {connection.recommendationReasons.length > 0 && (
-                                                <span className="ml-1">
-                                                    • {connection.recommendationReasons[0]}
+                                            {connection.isConneQtUser ? (
+                                                <span className="text-green-600 dark:text-green-400 font-medium">
+                                                    ✨ ConneQt User
                                                 </span>
+                                            ) : (
+                                                connection.recommendationReasons.length > 0 && (
+                                                    <span>{connection.recommendationReasons[0]}</span>
+                                                )
                                             )}
                                         </div>
                                     </div>
-                                    {connection.recommendationReasons.includes('Potential mentor') && (
-                                        <FiStar className="w-4 h-4 text-yellow-500" />
+                                    {connection.isConneQtUser && (
+                                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                     )}
                                 </div>
                             ))}
@@ -167,10 +170,10 @@ const ConnectionsWidget = () => {
                 <div className="text-center py-6">
                     <FiUsers className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                        Discover Your Network
+                        Find Your Friends
                     </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                        Sync your Google data to get AI-powered connection recommendations and find potential mentors.
+                        Sync your Google contacts to see which of your friends are already using ConneQt.
                     </p>
                     <button
                         onClick={handleSyncData}

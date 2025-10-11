@@ -23,7 +23,7 @@ import LoadingStates from '../components/common/LoadingStates';
 import { databases } from '../lib/appwrite';
 
 const JobDetailPage = () => {
-    const { id } = useParams();
+    const { jobId } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
@@ -38,8 +38,8 @@ const JobDetailPage = () => {
 
     useEffect(() => {
         const fetchJob = async () => {
-            // Check if id exists
-            if (!id) {
+            // Check if jobId exists
+            if (!jobId) {
                 console.error('No job ID provided');
                 setLoading(false);
                 return;
@@ -49,20 +49,22 @@ const JobDetailPage = () => {
                 const response = await databases.getDocument({
                     databaseId: 'jobs_database',
                     collectionId: 'jobs_collection',
-                    documentId: id
+                    documentId: jobId
                 });
                 setJob(response);
                 // Check if user has already applied (mock check)
                 setHasApplied(Math.random() > 0.7);
             } catch (error) {
                 console.error('Error fetching job details:', error);
+                // Set job to null if there's an error
+                setJob(null);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchJob();
-    }, [id]);
+    }, [jobId]);
 
     const handleApply = async () => {
         setApplying(true);
@@ -102,7 +104,7 @@ const JobDetailPage = () => {
                         Select Alumni
                     </label>
                     <div className="space-y-2">
-                        {job.alumni.map((alumni) => (
+                        {(job.alumni || []).map((alumni) => (
                             <button
                                 key={alumni.id}
                                 onClick={() => setSelectedAlumni(alumni)}
@@ -235,16 +237,18 @@ const JobDetailPage = () => {
                                 <FiUsers className="w-4 h-4 mr-1" />
                                 {job.applicants} applicants
                             </div>
-                            {job.hasAlumni && (
+                            {job.alumni && job.alumni.length > 0 && (
                                 <div className="flex items-center text-green-600 dark:text-green-400">
                                     <FiTrendingUp className="w-4 h-4 mr-1" />
                                     {job.alumni.length} SECE alumni work here
                                 </div>
                             )}
-                            <div className="flex items-center text-red-600 dark:text-red-400">
-                                <FiClock className="w-4 h-4 mr-1" />
-                                Deadline: {new Date(job.deadline).toLocaleDateString()}
-                            </div>
+                            {job.deadline && (
+                                <div className="flex items-center text-red-600 dark:text-red-400">
+                                    <FiClock className="w-4 h-4 mr-1" />
+                                    Deadline: {new Date(job.deadline).toLocaleDateString()}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -266,7 +270,7 @@ const JobDetailPage = () => {
                             Requirements
                         </h2>
                         <ul className="space-y-2">
-                            {job.requirements.map((req, index) => (
+                            {(job.requirements || []).map((req, index) => (
                                 <li key={index} className="flex items-start space-x-2">
                                     <FiCheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
                                     <span className="text-gray-700 dark:text-gray-300">{req}</span>
@@ -281,12 +285,12 @@ const JobDetailPage = () => {
                             Required Skills
                         </h2>
                         <div className="flex flex-wrap gap-2">
-                            {job.skills.map((skill, index) => (
+                            {job.skills && job.skills.split(',').map((skill, index) => (
                                 <span
                                     key={index}
                                     className="px-3 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 rounded-full text-sm font-medium"
                                 >
-                                    {skill}
+                                    {skill.trim()}
                                 </span>
                             ))}
                         </div>
@@ -331,7 +335,7 @@ const JobDetailPage = () => {
                             </button>
                         )}
 
-                        {job.hasAlumni && (
+                        {job.alumni && job.alumni.length > 0 && (
                             <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <button
                                     onClick={() => setShowAlumniModal(true)}
@@ -357,35 +361,39 @@ const JobDetailPage = () => {
                             </button>
                         </div>
 
-                        <div className="space-y-3 text-sm">
-                            <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                <FiHome className="w-4 h-4 mr-2" />
-                                {job.companyInfo.size}
+                        {job.companyInfo && (
+                            <div className="space-y-3 text-sm">
+                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                    <FiHome className="w-4 h-4 mr-2" />
+                                    {job.companyInfo.size}
+                                </div>
+                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                    <FiBriefcase className="w-4 h-4 mr-2" />
+                                    {job.companyInfo.industry}
+                                </div>
+                                <div className="flex items-center text-gray-600 dark:text-gray-400">
+                                    <FiClock className="w-4 h-4 mr-2" />
+                                    Founded {job.companyInfo.founded}
+                                </div>
                             </div>
-                            <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                <FiBriefcase className="w-4 h-4 mr-2" />
-                                {job.companyInfo.industry}
-                            </div>
-                            <div className="flex items-center text-gray-600 dark:text-gray-400">
-                                <FiClock className="w-4 h-4 mr-2" />
-                                Founded {job.companyInfo.founded}
-                            </div>
-                        </div>
+                        )}
 
-                        <p className="text-gray-700 dark:text-gray-300 text-sm mt-4">
-                            {job.companyInfo.description}
-                        </p>
+                        {job.companyInfo && (
+                            <p className="text-gray-700 dark:text-gray-300 text-sm mt-4">
+                                {job.companyInfo.description}
+                            </p>
+                        )}
                     </div>
 
                     {/* Alumni at Company */}
-                    {job.hasAlumni && (
+                    {job.alumni && job.alumni.length > 0 && (
                         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50">
                             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                                 SECE Alumni at {job.company}
                             </h3>
 
                             <div className="space-y-3">
-                                {job.alumni.slice(0, 3).map((alumni) => (
+                                {(job.alumni || []).slice(0, 3).map((alumni) => (
                                     <div key={alumni.id} className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                                         <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                                             {alumni.name.charAt(0)}

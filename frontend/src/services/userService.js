@@ -64,7 +64,7 @@ class UserService {
       const response = await databases.listDocuments(
         DATABASE_ID,
         USER_PROFILES_COLLECTION_ID,
-        [`limit(${limit})`, `offset(${offset})`, 'orderDesc("joined_at")']
+        [Query.limit(limit), Query.offset(offset), Query.orderDesc("joined_at")]
       );
 
       return {
@@ -125,12 +125,40 @@ class UserService {
       const response = await databases.listDocuments(
         DATABASE_ID,
         USER_PROFILES_COLLECTION_ID,
-        [`search("name", "${query}")`, 'orderDesc("joined_at")']
+        [Query.search("name", query), Query.orderDesc("joined_at")]
       );
 
       return response.documents;
     } catch (error) {
       console.error("Search users error:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ensure user profile exists, create if it doesn't
+   * @param {string} userId - Appwrite user ID
+   * @param {string} name - User's name
+   * @param {string} email - User's email
+   * @returns {Promise} User profile document
+   */
+  async ensureUserProfile(userId, name, email) {
+    try {
+      // Try to get existing profile
+      let profile = await this.getUserProfile(userId);
+
+      // If profile doesn't exist, create it
+      if (!profile) {
+        console.log("Creating user profile for:", userId);
+        profile = await this.createUserProfile(userId, name, email);
+        console.log("User profile created:", profile);
+      } else {
+        console.log("User profile already exists:", profile);
+      }
+
+      return profile;
+    } catch (error) {
+      console.error("Ensure user profile error:", error);
       throw error;
     }
   }

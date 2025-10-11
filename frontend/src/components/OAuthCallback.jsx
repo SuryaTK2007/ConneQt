@@ -6,7 +6,7 @@ import userService from '../services/userService';
 
 const OAuthCallback = () => {
     const navigate = useNavigate();
-    const { user, loading } = useAuth();
+    const { loading, refreshUser } = useAuth();
     const [processing, setProcessing] = useState(true);
     const [error, setError] = useState('');
 
@@ -14,55 +14,57 @@ const OAuthCallback = () => {
         const handleOAuthCallback = async () => {
             try {
                 setProcessing(true);
+                console.log('OAuth callback: Starting authentication process...');
 
                 // Wait a moment for the session to be established
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                await new Promise(resolve => setTimeout(resolve, 1500));
 
                 // Get the current user after OAuth login
                 const currentUser = await authService.getCurrentUser();
+                console.log('OAuth callback: Current user:', currentUser);
 
                 if (currentUser) {
-                    // Check if user profile exists in database
-                    const existingProfile = await userService.getUserProfile(currentUser.$id);
-
-                    if (!existingProfile) {
-                        // Create user profile for OAuth users
-                        try {
-                            await userService.createUserProfile(
-                                currentUser.$id,
-                                currentUser.name || 'Google User',
-                                currentUser.email
-                            );
-                        } catch (profileError) {
-                            console.warn('Failed to create user profile:', profileError);
-                        }
+                    // Ensure user profile exists (create if not)
+                    console.log('OAuth callback: Ensuring user profile exists...');
+                    try {
+                        await userService.ensureUserProfile(
+                            currentUser.$id,
+                            currentUser.name || 'Google User',
+                            currentUser.email
+                        );
+                        console.log('OAuth callback: User profile is ready');
+                    } catch (profileError) {
+                        console.error('OAuth callback: Failed to ensure user profile:', profileError);
+                        // Don't fail the login if profile creation fails
+                        // User can still access the app and profile can be created later
                     }
 
+                    // Refresh the user in AuthContext
+                    console.log('OAuth callback: Refreshing user in context...');
+                    await refreshUser();
+
+                    console.log('OAuth callback: Redirecting to home page...');
                     // Redirect to home page
                     navigate('/home', { replace: true });
                 } else {
+                    console.error('OAuth callback: No user found after authentication');
                     setError('Authentication failed. Please try again.');
                     setTimeout(() => navigate('/auth'), 3000);
                 }
             } catch (err) {
                 console.error('OAuth callback error:', err);
-                setError('Authentication failed. Please try again.');
+                setError('Authentication failed: ' + err.message);
                 setTimeout(() => navigate('/auth'), 3000);
             } finally {
                 setProcessing(false);
             }
         };
 
-        // Only handle callback if we're not already loading and don't have a user
-        if (!loading) {
-            if (user) {
-                // User is already authenticated, redirect to home
-                navigate('/home', { replace: true });
-            } else {
-                handleOAuthCallback();
-            }
+        // Only handle callback once when loading is complete
+        if (!loading && processing) {
+            handleOAuthCallback();
         }
-    }, [loading, user, navigate]);
+    }, [loading, navigate, processing]);
 
     if (loading || processing) {
         return (

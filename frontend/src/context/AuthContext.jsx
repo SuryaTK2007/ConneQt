@@ -9,6 +9,7 @@ const AuthContext = createContext({
     signup: async () => { },
     logout: async () => { },
     loginWithGoogle: async () => { },
+    refreshUser: async () => { },
     isAuthenticated: false,
 });
 
@@ -98,6 +99,17 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const refreshUser = async () => {
+        try {
+            const currentUser = await authService.getCurrentUser();
+            setUser(currentUser);
+            return { success: true, user: currentUser };
+        } catch (error) {
+            console.error('Refresh user failed:', error);
+            return { success: false, error: error.message };
+        }
+    };
+
     const value = {
         user,
         loading,
@@ -105,6 +117,7 @@ export const AuthProvider = ({ children }) => {
         signup,
         logout,
         loginWithGoogle,
+        refreshUser,
         isAuthenticated: !!user,
     };
 

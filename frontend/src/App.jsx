@@ -11,6 +11,8 @@ import CalendarPage from './pages/CalendarPage';
 import WorksPage from './pages/WorksPage';
 import AlumniChatPage from './pages/AlumniChatPage';
 import EventsPage from './pages/EventsPage';
+import SettingsPage from './pages/SettingsPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -65,6 +67,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <EventsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />

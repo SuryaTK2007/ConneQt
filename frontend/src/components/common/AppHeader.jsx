@@ -50,6 +50,10 @@ const AppHeader = () => {
                 return 'Alumni Chat';
             case '/works':
                 return 'Works';
+            case '/settings':
+                return 'Settings';
+            case '/profile':
+                return 'Profile';
             default:
                 return 'ConneQt';
         }

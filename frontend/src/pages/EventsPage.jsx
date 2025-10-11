@@ -1,9 +1,10 @@
-import React from 'react';
-import BottomNavigation from '../components/home/BottomNavigation';
+import React, { useState } from 'react';
 import EventCard from '../components/home/EventCard';
+import PageContainer from '../components/common/PageContainer';
 
 const EventsPage = () => {
-  
+  const [selectedFilter, setSelectedFilter] = useState('all');
+
   const events = [
     { id: 1, title: 'Tech Career Fair 2024', date: 'March 15, 2024', location: 'Main Auditorium', type: 'Career Event', icon: '💼', bgColor: 'bg-gradient-to-br from-blue-500 to-cyan-600' },
     { id: 2, title: 'Alumni Networking Night', date: 'March 20, 2024', location: 'Student Center', type: 'Networking', icon: '🤝', bgColor: 'bg-gradient-to-br from-purple-500 to-pink-600' },
@@ -19,38 +20,44 @@ const EventsPage = () => {
     { id: 12, title: 'Entrepreneurship Bootcamp', date: 'April 25, 2024', location: 'Startup Hub', type: 'Bootcamp', icon: '💡', bgColor: 'bg-gradient-to-br from-amber-500 to-yellow-600' }
   ];
 
-
+  const filteredEvents = selectedFilter === 'all'
+    ? events
+    : events.filter(event =>
+      event.type.toLowerCase().includes(selectedFilter.toLowerCase())
+    );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-24">
-      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 z-40">
-        <div className="px-6 py-4">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Events</h1>
+    <PageContainer maxWidth="max-w-6xl">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1">
+            Upcoming Events
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            {filteredEvents.length} {filteredEvents.length === 1 ? 'event' : 'events'} available
+          </p>
         </div>
-      </header>
 
-      <main className="px-6 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Upcoming Events</h2>
-            <select className="px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500">
-              <option>All Events</option>
-              <option>Career Events</option>
-              <option>Workshops</option>
-              <option>Networking</option>
-            </select>
-          </div>
+        <select
+          value={selectedFilter}
+          onChange={(e) => setSelectedFilter(e.target.value)}
+          className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+        >
+          <option value="all">All Events</option>
+          <option value="career">Career Events</option>
+          <option value="workshop">Workshops</option>
+          <option value="networking">Networking</option>
+        </select>
+      </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </div>
-      </main>
-
-      <BottomNavigation activeTab="events" />
-    </div>
+      {/* Events Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredEvents.map((event) => (
+          <EventCard key={event.id} event={event} />
+        ))}
+      </div>
+    </PageContainer>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FiBriefcase,
   FiTrendingUp,
@@ -12,9 +12,13 @@ import { useNavigate } from 'react-router-dom';
 import EventCard from '../components/home/EventCard';
 import ConnectionsWidget from '../components/home/ConnectionsWidget';
 import PageContainer from '../components/common/PageContainer';
+import { databases } from '../lib/appwrite';
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const [featuredJobs, setFeaturedJobs] = useState([]);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [totalJobs, setTotalJobs] = useState(0);
 
   const eventPosts = [
     { id: 1, title: 'Tech Career Fair 2024', date: 'March 15, 2024', location: 'Main Auditorium', type: 'Career Event', icon: '💼', bgColor: 'bg-gradient-to-br from-blue-500 to-cyan-600' },
@@ -25,41 +29,51 @@ const HomePage = () => {
     { id: 6, title: 'Coding Bootcamp', date: 'April 5, 2024', location: 'Computer Lab', type: 'Workshop', icon: '💻', bgColor: 'bg-gradient-to-br from-cyan-500 to-blue-600' }
   ];
 
-  const featuredJobs = [
-    {
-      id: 1,
-      title: 'Software Engineer Intern',
-      company: 'Google',
-      logo: '🔍',
-      location: 'Bangalore, India',
-      type: 'Internship',
-      salary: '₹50,000/month',
-      postedTime: '2 days ago',
-      hasAlumni: true
-    },
-    {
-      id: 2,
-      title: 'Frontend Developer',
-      company: 'Microsoft',
-      logo: '🪟',
-      location: 'Hyderabad, India',
-      type: 'Full-time',
-      salary: '₹8-12 LPA',
-      postedTime: '1 week ago',
-      hasAlumni: true
-    },
-    {
-      id: 3,
-      title: 'Data Analyst',
-      company: 'Flipkart',
-      logo: '🛒',
-      location: 'Bangalore, India',
-      type: 'Full-time',
-      salary: '₹6-9 LPA',
-      postedTime: '3 days ago',
-      hasAlumni: false
-    }
-  ];
+  // Function to get company logo
+  const getCompanyLogo = (companyName) => {
+    const logos = {
+      'Google': '🔍',
+      'Microsoft': '🪟',
+      'Flipkart': '🛒',
+      'Zomato': '🍕',
+      'Adobe': '🎨'
+    };
+    return logos[companyName] || '🏢';
+  };
+
+  // Fetch featured jobs from database
+  useEffect(() => {
+    const fetchFeaturedJobs = async () => {
+      try {
+        const response = await databases.listDocuments({
+          databaseId: 'jobs_database',
+          collectionId: 'jobs_collection'
+        });
+
+        // Get first 3 jobs for featured section
+        const jobs = response.documents.slice(0, 3).map(job => ({
+          id: job.$id,
+          title: job.title,
+          company: job.company,
+          logo: getCompanyLogo(job.company),
+          location: job.location,
+          type: job.type,
+          salary: job.salary,
+          postedTime: job.posted,
+          hasAlumni: Math.random() > 0.5 // Random for now
+        }));
+
+        setFeaturedJobs(jobs);
+        setTotalJobs(response.total);
+      } catch (error) {
+        console.error('Error fetching featured jobs:', error);
+      } finally {
+        setJobsLoading(false);
+      }
+    };
+
+    fetchFeaturedJobs();
+  }, []);
 
   return (
     <PageContainer maxWidth="max-w-6xl">
@@ -81,7 +95,9 @@ const HomePage = () => {
               <FiBriefcase className="w-5 h-5 text-blue-600" />
             </div>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">24</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            {jobsLoading ? '...' : totalJobs}
+          </p>
           <p className="text-sm text-gray-600 dark:text-gray-400">Active Jobs</p>
         </div>
 
@@ -137,44 +153,67 @@ const HomePage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          {featuredJobs.map((job) => (
-            <div
-              key={job.id}
-              onClick={() => navigate(`/jobs/${job.id}`)}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:border-cyan-500/50 transition-all cursor-pointer group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center text-2xl">
-                  {job.logo}
+          {jobsLoading ? (
+            // Loading skeleton for featured jobs
+            Array.from({ length: 3 }).map((_, index) => (
+              <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 animate-pulse">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                  <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                 </div>
-                {job.hasAlumni && (
-                  <span className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium rounded-full">
-                    Alumni
-                  </span>
-                )}
-              </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
-                {job.title}
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-3">{job.company}</p>
-
-              <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                <div className="flex items-center">
-                  <FiMapPin className="w-4 h-4 mr-2" />
-                  {job.location}
-                </div>
-                <div className="flex items-center">
-                  <FiBriefcase className="w-4 h-4 mr-2" />
-                  {job.type} • {job.salary}
-                </div>
-                <div className="flex items-center">
-                  <FiClock className="w-4 h-4 mr-2" />
-                  {job.postedTime}
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4 w-2/3"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
                 </div>
               </div>
+            ))
+          ) : featuredJobs.length === 0 ? (
+            <div className="col-span-3 text-center py-8">
+              <p className="text-gray-500 dark:text-gray-400">No featured jobs available</p>
             </div>
-          ))}
+          ) : (
+            featuredJobs.map((job) => (
+              <div
+                key={job.id}
+                onClick={() => navigate(`/jobs/${job.id}`)}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200/50 dark:border-gray-700/50 hover:border-cyan-500/50 transition-all cursor-pointer group"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-xl flex items-center justify-center text-2xl">
+                    {job.logo}
+                  </div>
+                  {job.hasAlumni && (
+                    <span className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 text-xs font-medium rounded-full">
+                      Alumni
+                    </span>
+                  )}
+                </div>
+
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors">
+                  {job.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-3">{job.company}</p>
+
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center">
+                    <FiMapPin className="w-4 h-4 mr-2" />
+                    {job.location}
+                  </div>
+                  <div className="flex items-center">
+                    <FiBriefcase className="w-4 h-4 mr-2" />
+                    {job.type} • {job.salary}
+                  </div>
+                  <div className="flex items-center">
+                    <FiClock className="w-4 h-4 mr-2" />
+                    {job.postedTime}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Quick Actions */}

@@ -54,6 +54,14 @@ const AuthPage = () => {
       setError("Please enter your email");
       return false;
     }
+
+    // Validate email domain - only allow sece.ac.in emails
+    const emailDomain = formData.email.split('@')[1]?.toLowerCase();
+    if (emailDomain !== 'sece.ac.in') {
+      setError("Only SECE email addresses (@sece.ac.in) are allowed");
+      return false;
+    }
+
     if (!formData.password.trim()) {
       setError("Please enter your password");
       return false;
@@ -191,13 +199,16 @@ const AuthPage = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email Address"
+                  placeholder="SECE Email (@sece.ac.in)"
                   value={formData.email}
                   onChange={handleInputChange}
                   className="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   required
                 />
               </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 -mt-2 ml-1">
+                Only SECE institutional emails are accepted
+              </p>
 
               <div className="relative">
                 <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
